@@ -114,10 +114,10 @@ export default function ChatPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen lg:h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+      <header className="bg-white shadow-sm border-b flex-shrink-0">
+        <div className="w-full px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-green-100 rounded-full">
               <DollarSign className="h-6 w-6 text-green-600" />
@@ -134,39 +134,18 @@ export default function ChatPage() {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar con sugerencias */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Preguntas Frecuentes</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {suggestedQuestions.map((question, index) => (
-                  <Button
-                    key={index}
-                    variant="ghost"
-                    className="w-full text-left justify-start h-auto p-3 text-sm"
-                    onClick={() => handleSuggestedQuestion(question)}
-                  >
-                    {question}
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Chat principal */}
-          <div className="lg:col-span-3">
-            <Card className="h-[calc(100vh-200px)]">
-              <CardHeader>
+      <div className="flex-1 w-full flex flex-col lg:px-4 lg:py-4 overflow-hidden">
+        <div className="flex flex-col lg:grid lg:grid-cols-4 lg:gap-6 h-full">
+          {/* Chat principal - primero en mobile */}
+          <div className="flex-1 lg:col-span-3 lg:order-2 flex flex-col lg:min-h-0 p-4 lg:p-0">
+            <Card className="flex-1 flex flex-col lg:h-full">
+              <CardHeader className="flex-shrink-0">
                 <CardTitle className="flex items-center space-x-2">
                   <Bot className="h-5 w-5 text-green-600" />
                   <span>Asesor Financiero Personal</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-col h-full p-0">
+              <CardContent className="flex flex-col flex-1 p-0">
                 {/* Área de mensajes */}
                 <ScrollArea className="flex-1 p-4">
                   {messages.length === 0 && (
@@ -181,7 +160,7 @@ export default function ChatPage() {
                       </p>
                       <p className="text-sm text-gray-500">
                         Haz una pregunta o selecciona una sugerencia del panel
-                        lateral.
+                        inferior.
                       </p>
                     </div>
                   )}
@@ -250,7 +229,7 @@ export default function ChatPage() {
                 </ScrollArea>
 
                 {/* Input de mensaje */}
-                <div className="border-t p-4">
+                <div className="border-t p-4 flex-shrink-0">
                   <form onSubmit={handleSubmit} className="flex space-x-2">
                     <Input
                       value={input}
@@ -264,6 +243,27 @@ export default function ChatPage() {
                     </Button>
                   </form>
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar con sugerencias - segundo en mobile */}
+          <div className="flex-shrink-0 lg:col-span-1 lg:order-1 p-4 lg:p-0">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Preguntas Frecuentes</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {suggestedQuestions.map((question) => (
+                  <Button
+                    key={question}
+                    variant="ghost"
+                    className="w-full text-left justify-start h-auto p-3 text-sm"
+                    onClick={() => handleSuggestedQuestion(question)}
+                  >
+                    {question}
+                  </Button>
+                ))}
               </CardContent>
             </Card>
           </div>

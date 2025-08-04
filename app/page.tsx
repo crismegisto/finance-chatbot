@@ -1,31 +1,41 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { DollarSign, TrendingUp, PiggyBank } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { DollarSign, TrendingUp, PiggyBank } from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     // Simulamos un login (en producción conectarías con tu sistema de auth)
     setTimeout(() => {
-      localStorage.setItem("user", JSON.stringify({ email, name: email.split("@")[0] }))
-      router.push("/chat")
-    }, 1000)
-  }
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ email, name: email.split("@")[0] })
+      );
+      router.push("/chat");
+    }, 1000);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
@@ -50,7 +60,9 @@ export default function LoginPage() {
         <Card>
           <CardHeader>
             <CardTitle>Iniciar Sesión</CardTitle>
-            <CardDescription>Accede a tu asesor financiero personal</CardDescription>
+            <CardDescription>
+              Accede a tu asesor financiero personal
+            </CardDescription>
           </CardHeader>
           <form onSubmit={handleLogin}>
             <CardContent className="space-y-4">
@@ -77,18 +89,18 @@ export default function LoginPage() {
                 />
               </div>
             </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
+            <CardFooter className="pt-6">
+              <Button
+                type="submit"
+                className="w-full bg-green-600 hover:bg-green-700"
+                disabled={isLoading}
+              >
                 {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
               </Button>
             </CardFooter>
           </form>
         </Card>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Demo: Usa cualquier email y contraseña</p>
-        </div>
       </div>
     </div>
-  )
+  );
 }

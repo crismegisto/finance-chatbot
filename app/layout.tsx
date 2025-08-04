@@ -4,9 +4,24 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'FinBot - Tu Asesor Financiero Personal',
+  description: 'Chatbot financiero inteligente especializado en presupuestos, ahorros, inversiones y control de gastos. Obtén consejos personalizados para mejorar tu salud financiera.',
+  keywords: ['finanzas', 'chatbot', 'presupuesto', 'ahorros', 'inversiones', 'asesor financiero'],
+  authors: [{ name: 'FinBot' }],
+  creator: 'FinBot',
+  openGraph: {
+    title: 'FinBot - Tu Asesor Financiero Personal',
+    description: 'Chatbot financiero inteligente para mejorar tu salud financiera',
+    type: 'website',
+    locale: 'es_ES',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FinBot - Tu Asesor Financiero Personal',
+    description: 'Chatbot financiero inteligente para mejorar tu salud financiera',
+  },
+  viewport: 'width=device-width, initial-scale=1',
+  robots: 'index, follow',
 }
 
 export default function RootLayout({
@@ -15,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <style>{`
 html {
