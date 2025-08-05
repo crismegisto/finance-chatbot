@@ -57,7 +57,7 @@ export default function LoginPage() {
 
       router.push("/chat");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al iniciar sesión");
+      setError("El usuario no existe o las credenciales son invalidas");
     } finally {
       setIsLoading(false);
     }

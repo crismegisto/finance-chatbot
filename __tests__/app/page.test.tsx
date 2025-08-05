@@ -17,7 +17,7 @@ describe("HomePage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Mock localStorage
-    Object.defineProperty(window, 'localStorage', {
+    Object.defineProperty(window, "localStorage", {
       value: {
         setItem: jest.fn(),
         getItem: jest.fn(),
@@ -40,10 +40,14 @@ describe("HomePage", () => {
     render(<HomePage />);
 
     expect(screen.getAllByText(/Iniciar Sesión/i)).toHaveLength(2); // Title and button
-    expect(screen.getByText("Accede a tu asesor financiero personal")).toBeInTheDocument();
+    expect(
+      screen.getByText("Accede a tu asesor financiero personal")
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Contraseña/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Iniciar Sesión/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Iniciar Sesión/i })
+    ).toBeInTheDocument();
   });
 
   it("displays register link", () => {
@@ -60,18 +64,20 @@ describe("HomePage", () => {
       json: async () => ({
         user: {
           email: "test@example.com",
-          id: "123"
-        }
-      })
+          id: "123",
+        },
+      }),
     };
-    
+
     (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
-    
+
     render(<HomePage />);
 
     const emailInput = screen.getByLabelText(/Email/i);
     const passwordInput = screen.getByLabelText(/Contraseña/i);
-    const submitButton = screen.getByRole("button", { name: /Iniciar Sesión/i });
+    const submitButton = screen.getByRole("button", {
+      name: /Iniciar Sesión/i,
+    });
 
     await user.type(emailInput, "test@example.com");
     await user.type(passwordInput, "password123");
@@ -82,7 +88,10 @@ describe("HomePage", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: "test@example.com", password: "password123" }),
+      body: JSON.stringify({
+        email: "test@example.com",
+        password: "password123",
+      }),
     });
 
     expect(mockPush).toHaveBeenCalledWith("/chat");
@@ -93,22 +102,28 @@ describe("HomePage", () => {
     const mockResponse = {
       ok: false,
       json: async () => ({
-        error: "Invalid credentials"
-      })
+        error: "Invalid credentials",
+      }),
     };
-    
+
     (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
-    
+
     render(<HomePage />);
 
     const emailInput = screen.getByLabelText(/Email/i);
     const passwordInput = screen.getByLabelText(/Contraseña/i);
-    const submitButton = screen.getByRole("button", { name: /Iniciar Sesión/i });
+    const submitButton = screen.getByRole("button", {
+      name: /Iniciar Sesión/i,
+    });
 
     await user.type(emailInput, "wrong@example.com");
     await user.type(passwordInput, "wrongpassword");
     await user.click(submitButton);
 
-    expect(await screen.findByText("Invalid credentials")).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "El usuario no existe o las credenciales son invalidas"
+      )
+    ).toBeInTheDocument();
   });
 });
