@@ -94,9 +94,26 @@ export default function ChatPage() {
     }
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    router.push("/");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/users/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("Error al cerrar sesión:", data.error);
+      }
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    } finally {
+      // Always clear localStorage and redirect, even if API call fails
+      localStorage.removeItem("user");
+      router.push("/");
+    }
   };
 
   const suggestedQuestions = [

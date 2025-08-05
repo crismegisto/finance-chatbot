@@ -18,46 +18,46 @@ import {
 import { Label } from "@/components/ui/label";
 import { DollarSign, TrendingUp, PiggyBank } from "lucide-react";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setSuccess("");
 
     try {
-      const response = await fetch("/api/users/login", {
+      const response = await fetch("/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, name }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Error al iniciar sesión");
+        throw new Error(data.error || "Error al registrar usuario");
       }
 
-      // Store user data in localStorage
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          email: data.user.email,
-          name: data.user.email.split("@")[0],
-          id: data.user.id,
-        })
-      );
+      setSuccess(data.message);
 
-      router.push("/chat");
+      // Wait a moment to show success message, then redirect to login
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al iniciar sesión");
+      setError(
+        err instanceof Error ? err.message : "Error al registrar usuario"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -85,18 +85,33 @@ export default function LoginPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Iniciar Sesión</CardTitle>
+            <CardTitle>Crear Cuenta</CardTitle>
             <CardDescription>
-              Accede a tu asesor financiero personal
+              Regístrate para acceder a tu asesor financiero personal
             </CardDescription>
           </CardHeader>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleRegister}>
             <CardContent className="space-y-4">
               {error && (
                 <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
                   {error}
                 </div>
               )}
+              {success && (
+                <div className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
+                  {success}
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="name">Nombre (opcional)</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Tu nombre"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -126,15 +141,15 @@ export default function LoginPage() {
                 className="w-full bg-green-600 hover:bg-green-700"
                 disabled={isLoading}
               >
-                {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
               </Button>
               <div className="text-center text-sm text-gray-600">
-                ¿No tienes cuenta?{" "}
+                ¿Ya tienes cuenta?{" "}
                 <Link
-                  href="/register"
+                  href="/"
                   className="text-green-600 hover:text-green-700 font-medium"
                 >
-                  Crear Cuenta
+                  Iniciar Sesión
                 </Link>
               </div>
             </CardFooter>
