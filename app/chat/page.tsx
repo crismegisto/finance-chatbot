@@ -66,11 +66,11 @@ const useChat = () => {
       });
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
       const data = await res.json();
-      // Assume the response is { answer: string }
+      // Assume the response is { answer: string }      
       const assistantMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant" as const,
-        content: data.answer || "No se recibió respuesta del servidor.",
+        content: data.response || "No se recibió respuesta del servidor.",
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
