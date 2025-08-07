@@ -9,8 +9,24 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, Send, Bot, User, DollarSign } from "lucide-react";
 
+const gethistoryChatQuestions = async (userId: string) => {
+  try {
+    const response = await fetch(
+      `/api/users/chat?userId=${encodeURIComponent(userId)}`
+    );
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Error al obtener historial de chats");
+    }
+    return data.sessions || [];
+  } catch (error) {
+    console.error("Error al obtener historial de chats:", error);
+    return [];
+  }
+};
+
 // Mock implementation of useChat with persistent messages
-const useChat = () => {
+const useChat = (user: any) => {
   const [messages, setMessages] = useState<any[]>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("chatMessages");
@@ -20,6 +36,54 @@ const useChat = () => {
   });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Session ID persistent during session
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let sid = sessionStorage.getItem("sessionId");
+      if (!sid) {
+        sid = crypto.randomUUID();
+        sessionStorage.setItem("sessionId", sid);
+      }
+      setSessionId(sid);
+    }
+  }, []);
+
+  const handleMessages = async (messageToSend: string, sender: string) => {
+    try {
+      const response = await fetch("/api/users/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionId,
+          message: messageToSend,
+          sender,
+          userData: user,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al registrar mensaje");
+      }
+    } catch (error) {
+      console.error("Error al enviar mensaje:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: "ai" as const,
+          content: "Ocurrió un error al enviar el mensaje. Intenta de nuevo más tarde.",
+        },
+      ]);
+      setIsLoading(false);
+      return;
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -34,6 +98,7 @@ const useChat = () => {
 
   const handleSubmit = async (
     e: React.FormEvent,
+    user: any,
     options?: { data?: { message: string } }
   ) => {
     e.preventDefault();
@@ -43,7 +108,7 @@ const useChat = () => {
 
     // Add user message
     const userMessage = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       role: "user" as const,
       content: messageToSend,
     };
@@ -51,34 +116,37 @@ const useChat = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
+    handleMessages(messageToSend, userMessage.role);
 
-    const messageStringed = JSON.stringify(messageToSend);
-    console.log("Mensaje enviado:", messageStringed);
     try {
-      const res = await fetch("https://wealthadvisor-ejgpcmhtfscthnde.canadacentral-01.azurewebsites.net/ask", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer CLAVE_API_TEAM8_070401082025?",
-          "accept": "application/json",
-        },
-        body: JSON.stringify({ query: messageToSend }),
-      });
+      const res = await fetch(
+        "https://wealthadvisor-ejgpcmhtfscthnde.canadacentral-01.azurewebsites.net/ask",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer CLAVE_API_TEAM8_070401082025?",
+            accept: "application/json",
+          },
+          body: JSON.stringify({ query: messageToSend }),
+        }
+      );
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
       const data = await res.json();
-      // Assume the response is { answer: string }      
+      // Assume the response is { answer: string }
       const assistantMessage = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant" as const,
+        id: crypto.randomUUID(),
+        role: "ai" as const,
         content: data.response || "No se recibió respuesta del servidor.",
       };
       setMessages((prev) => [...prev, assistantMessage]);
+      handleMessages(assistantMessage.content, assistantMessage.role);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
         {
-          id: (Date.now() + 2).toString(),
-          role: "assistant" as const,
+          id: crypto.randomUUID(),
+          role: "ai" as const,
           content: "Ocurrió un error al obtener la respuesta. Intenta de nuevo más tarde.",
         },
       ]);
@@ -99,12 +167,24 @@ const useChat = () => {
 
 export default function ChatPage() {
   const [user, setUser] = useState<any>(null);
+  const [chatSessions, setChatSessions] = useState<any[]>([]);
+
   const router = useRouter();
   const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages } =
-    useChat();
+    useChat(user);
 
   // Ref for auto-scrolling
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (user && user.id) {
+      const fetchChatSessions = async () => {
+        const sessions = await gethistoryChatQuestions(user.id);
+        setChatSessions(sessions);
+      };
+      fetchChatSessions();
+    }
+  }, [user]);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -133,31 +213,56 @@ export default function ChatPage() {
     } finally {
       // Always clear localStorage and redirect, even if API call fails
       localStorage.removeItem("user");
+      localStorage.removeItem("chatMessages");
       router.push("/");
     }
   };
 
-    // Scroll to bottom when messages change
+  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-  
+
   const handleStoriesRequest = () => {
     alert("Funcionalidad de historias de usuario aún no implementada.");
   };
 
-  const suggestedQuestions = [
-    "¿Cómo puedo crear un presupuesto mensual?",
-    "¿Cuál es la mejor estrategia para ahorrar?",
-    "¿Cómo puedo salir de deudas?",
-    "¿En qué debería invertir como principiante?",
-    "¿Cómo controlar mis gastos personales?",
-  ];
+  const getMessagesBySessionId = async (sessionId: string) => {
+    try {
+      const response = await fetch(
+        `/api/users/messages?sessionId=${encodeURIComponent(sessionId)}`
+      );
 
-  const handleSuggestedQuestion = (question: string) => {
-    handleSubmit(new Event("submit") as any, { data: { message: question } });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Error al obtener mensajes de la sesión");
+      }
+      return data.sessions || [];
+    } catch (error) {
+      console.error("Error al obtener mensajes de la sesión:", error);
+      return [];
+    }
+  };
+
+  const handleHistoryQuestion = async (session: any) => {
+    // Fetch all messages for the selected session
+    const messages = await getMessagesBySessionId(session.id);
+
+    // Store in localStorage
+    if (typeof window !== "undefined" && messages.length > 0) {
+      const storageMessages = messages.map((msg: any) =>{
+        const assistantMessage = {
+          id: msg.id,
+          role: msg.sender === "user" ? "user" : "ai",
+          content: msg.response
+        };
+        return assistantMessage
+      });
+      setMessages(storageMessages);
+      localStorage.setItem("chatMessages", JSON.stringify(storageMessages));
+    }
   };
 
   if (!user) return null;
@@ -178,7 +283,8 @@ export default function ChatPage() {
           </div>
           <div
             className="flex items-center space-x-2"
-            style={{ display: "flex", alignItems: "center" }}>
+            style={{ display: "flex", alignItems: "center" }}
+          >
             <Button variant="outline" onClick={handleStoriesRequest} size="sm">
               <LogOut className="h-4 w-4 mr-2" />
               Historias de Usuario
@@ -231,7 +337,7 @@ export default function ChatPage() {
                           : "justify-start"
                       }`}
                     >
-                      {message.role === "assistant" && (
+                      {message.role === "ai" && (
                         <Avatar className="h-8 w-8">
                           <AvatarFallback className="bg-green-100">
                             <Bot className="h-4 w-4 text-green-600" />
@@ -290,7 +396,10 @@ export default function ChatPage() {
 
                 {/* Input de mensaje */}
                 <div className="border-t p-4 flex-shrink-0 sticky bottom-0 z-10 bg-white">
-                  <form onSubmit={handleSubmit} className="flex space-x-2">
+                  <form
+                    onSubmit={(e: any) => handleSubmit(e, user)}
+                    className="flex space-x-2"
+                  >
                     <Input
                       value={input}
                       onChange={handleInputChange}
@@ -309,9 +418,30 @@ export default function ChatPage() {
 
           {/* Sidebar con sugerencias - segundo en mobile */}
           <div className="flex-shrink-0 lg:col-span-1 lg:order-1 p-4 lg:p-0">
-            <Card>
+            {chatSessions.length > 0 ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Historia de Chats</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {chatSessions.map((session) => (
+                    <Button
+                      key={session.id}
+                      variant="ghost"
+                      className="w-fitContent text-left justify-start h-auto p-3 text-sm"
+                      onClick={() => handleHistoryQuestion(session)}
+                    >
+                      {session.topic || "Pregunta sin título"}
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
+            ) : (
+              <p className="text-gray-500">No tienes chats previos.</p>
+            )}
+            {/* <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Preguntas Frecuentes</CardTitle>
+                <CardTitle className="text-lg">Historia de Chats</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {suggestedQuestions.map((question) => (
@@ -325,7 +455,7 @@ export default function ChatPage() {
                   </Button>
                 ))}
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>
