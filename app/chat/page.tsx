@@ -439,23 +439,6 @@ export default function ChatPage() {
             ) : (
               <p className="text-gray-500">No tienes chats previos.</p>
             )}
-            {/* <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Historia de Chats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {suggestedQuestions.map((question) => (
-                  <Button
-                    key={question}
-                    variant="ghost"
-                    className="w-fitContent text-left justify-start h-auto p-3 text-sm"
-                    onClick={() => handleSuggestedQuestion(question)}
-                  >
-                    {question}
-                  </Button>
-                ))}
-              </CardContent>
-            </Card> */}
           </div>
         </div>
       </div>
