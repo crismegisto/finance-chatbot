@@ -431,10 +431,10 @@ export default function ChatPage() {
                     <Button
                       key={session.id}
                       variant="ghost"
-                      className="w-fitContent text-left justify-start h-auto p-3 text-sm"
+                      className="w-full text-left justify-start h-auto p-3 text-sm truncate"
                       onClick={() => handleHistoryQuestion(session)}
                     >
-                      {session.topic || "Pregunta sin título"}
+                      <span className="block w-full truncate">{session.topic || "Pregunta sin título"}</span>
                     </Button>
                   ))}
                 </CardContent>
