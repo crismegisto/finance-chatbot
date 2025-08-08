@@ -280,7 +280,7 @@ export default function ChatPage() {
   }, []);
 
   const handleStoriesRequest = () => {
-    router.push("/historias");
+    window.open("https://crismegisto.github.io/finance-chatbot/", "_blank");
   };
 
   const getMessagesBySessionId = async (sessionId: string) => {
