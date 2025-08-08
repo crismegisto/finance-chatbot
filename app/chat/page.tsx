@@ -35,9 +35,14 @@ const useChat = (user: any, chatHistory?: any[]) => {
     return [];
   });
   // Chat history state for stacking interactions
-  const [stackedHistory, setStackedHistory] = useState<any[]>(chatHistory || []);
+  const [stackedHistory, setStackedHistory] = useState<any[]>(
+    chatHistory || []
+  );
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Ref for input focus management
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   // Session ID persistent during session
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -79,7 +84,8 @@ const useChat = (user: any, chatHistory?: any[]) => {
         {
           id: crypto.randomUUID(),
           role: "ai" as const,
-          content: "Ocurrió un error al enviar el mensaje. Intenta de nuevo más tarde.",
+          content:
+            "Ocurrió un error al enviar el mensaje. Intenta de nuevo más tarde.",
         },
       ]);
       setIsLoading(false);
@@ -130,7 +136,13 @@ const useChat = (user: any, chatHistory?: any[]) => {
             Authorization: "Bearer CLAVE_API_TEAM8_070401082025?",
             accept: "application/json",
           },
-          body: JSON.stringify({ query: messageToSend, chat_history: stackedHistory.map((msg) => ({ type: msg.role, content: msg.content })) }),
+          body: JSON.stringify({
+            query: messageToSend,
+            chat_history: stackedHistory.map((msg) => ({
+              type: msg.role,
+              content: msg.content,
+            })),
+          }),
         }
       );
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
@@ -158,11 +170,18 @@ const useChat = (user: any, chatHistory?: any[]) => {
         {
           id: crypto.randomUUID(),
           role: "ai" as const,
-          content: "Ocurrió un error al obtener la respuesta. Intenta de nuevo más tarde.",
+          content:
+            "Ocurrió un error al obtener la respuesta. Intenta de nuevo más tarde.",
         },
       ]);
     } finally {
       setIsLoading(false);
+      // Refocus input after message submission with proper timing
+      setTimeout(() => {
+        if (inputRef && inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
     }
   };
 
@@ -173,6 +192,7 @@ const useChat = (user: any, chatHistory?: any[]) => {
     handleSubmit,
     isLoading,
     setMessages, // expose for clearing on logout
+    inputRef, // expose ref for input component
   };
 };
 
@@ -182,8 +202,15 @@ export default function ChatPage() {
   const [chatHistory, setChatHistory] = useState<any[]>([]);
 
   const router = useRouter();
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages } =
-    useChat(user, chatHistory);
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    setMessages,
+    inputRef,
+  } = useChat(user, chatHistory);
 
   // Ref for auto-scrolling
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -240,6 +267,18 @@ export default function ChatPage() {
     }
   }, [messages]);
 
+  // Focus input on mount
+  useEffect(() => {
+    // Use setTimeout to ensure the DOM is fully ready
+    const timer = setTimeout(() => {
+      if (inputRef && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleStoriesRequest = () => {
     router.push("/historias");
   };
@@ -268,13 +307,13 @@ export default function ChatPage() {
     // Store in localStorage
     let storageMessages = [];
     if (typeof window !== "undefined" && messages.length > 0) {
-      storageMessages = messages.map((msg: any) =>{
+      storageMessages = messages.map((msg: any) => {
         const assistantMessage = {
           id: msg.id,
           role: msg.sender === "human" ? "human" : "ai",
-          content: msg.message
+          content: msg.message,
         };
-        return assistantMessage
+        return assistantMessage;
       });
       localStorage.setItem("chatMessages", JSON.stringify(storageMessages));
     }
@@ -335,7 +374,13 @@ export default function ChatPage() {
                         ¡Hola! Soy tu asesor financiero personal
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Te ayudo a organizar tu dinero y tomar mejores decisiones con <strong>presupuestos, ahorros, inversiones, deudas y gastos personales</strong>.
+                        Te ayudo a organizar tu dinero y tomar mejores
+                        decisiones con{" "}
+                        <strong>
+                          presupuestos, ahorros, inversiones, deudas y gastos
+                          personales
+                        </strong>
+                        .
                       </p>
                       <p className="text-sm text-gray-500">
                         Escribe tu pregunta y ¡comenzamos!
@@ -416,6 +461,7 @@ export default function ChatPage() {
                     className="flex space-x-2"
                   >
                     <Input
+                      ref={inputRef}
                       value={input}
                       onChange={handleInputChange}
                       placeholder="Pregúntame sobre finanzas personales..."
@@ -446,7 +492,9 @@ export default function ChatPage() {
                       className="w-full text-left justify-start h-auto p-3 text-sm truncate"
                       onClick={() => handleHistoryQuestion(session)}
                     >
-                      <span className="block w-full truncate">{session.topic || "Pregunta sin título"}</span>
+                      <span className="block w-full truncate">
+                        {session.topic || "Pregunta sin título"}
+                      </span>
                     </Button>
                   ))}
                 </CardContent>
