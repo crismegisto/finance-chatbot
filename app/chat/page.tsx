@@ -26,7 +26,7 @@ const gethistoryChatQuestions = async (userId: string) => {
 };
 
 // Mock implementation of useChat with persistent messages
-const useChat = (user: any) => {
+const useChat = (user: any, chatHistory?: any[]) => {
   const [messages, setMessages] = useState<any[]>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("chatMessages");
@@ -128,7 +128,7 @@ const useChat = (user: any) => {
             Authorization: "Bearer CLAVE_API_TEAM8_070401082025?",
             accept: "application/json",
           },
-          body: JSON.stringify({ query: messageToSend }),
+          body: JSON.stringify({ query: messageToSend, chat_history: chatHistory?.map((msg) => ({ type: msg.role, content: msg.content})) || [] }),
         }
       );
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
@@ -168,10 +168,11 @@ const useChat = (user: any) => {
 export default function ChatPage() {
   const [user, setUser] = useState<any>(null);
   const [chatSessions, setChatSessions] = useState<any[]>([]);
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
 
   const router = useRouter();
   const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages } =
-    useChat(user);
+    useChat(user, chatHistory);
 
   // Ref for auto-scrolling
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -226,7 +227,7 @@ export default function ChatPage() {
   }, [messages]);
 
   const handleStoriesRequest = () => {
-    alert("Funcionalidad de historias de usuario aún no implementada.");
+    router.push("/historias");
   };
 
   const getMessagesBySessionId = async (sessionId: string) => {
@@ -251,18 +252,20 @@ export default function ChatPage() {
     const messages = await getMessagesBySessionId(session.id);
 
     // Store in localStorage
+    let storageMessages = [];
     if (typeof window !== "undefined" && messages.length > 0) {
-      const storageMessages = messages.map((msg: any) =>{
+      storageMessages = messages.map((msg: any) =>{
         const assistantMessage = {
           id: msg.id,
           role: msg.sender === "user" ? "user" : "ai",
-          content: msg.response
+          content: msg.message
         };
         return assistantMessage
       });
-      setMessages(storageMessages);
       localStorage.setItem("chatMessages", JSON.stringify(storageMessages));
     }
+    setMessages(storageMessages);
+    setChatHistory(storageMessages);
   };
 
   if (!user) return null;
@@ -428,10 +431,10 @@ export default function ChatPage() {
                     <Button
                       key={session.id}
                       variant="ghost"
-                      className="w-fitContent text-left justify-start h-auto p-3 text-sm"
+                      className="w-full text-left justify-start h-auto p-3 text-sm truncate"
                       onClick={() => handleHistoryQuestion(session)}
                     >
-                      {session.topic || "Pregunta sin título"}
+                      <span className="block w-full truncate">{session.topic || "Pregunta sin título"}</span>
                     </Button>
                   ))}
                 </CardContent>
@@ -439,23 +442,6 @@ export default function ChatPage() {
             ) : (
               <p className="text-gray-500">No tienes chats previos.</p>
             )}
-            {/* <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Historia de Chats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {suggestedQuestions.map((question) => (
-                  <Button
-                    key={question}
-                    variant="ghost"
-                    className="w-fitContent text-left justify-start h-auto p-3 text-sm"
-                    onClick={() => handleSuggestedQuestion(question)}
-                  >
-                    {question}
-                  </Button>
-                ))}
-              </CardContent>
-            </Card> */}
           </div>
         </div>
       </div>
