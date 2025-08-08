@@ -109,7 +109,7 @@ const useChat = (user: any, chatHistory?: any[]) => {
     // Add user message
     const userMessage = {
       id: crypto.randomUUID(),
-      role: "user" as const,
+      role: "human" as const,
       content: messageToSend,
     };
 
@@ -260,7 +260,7 @@ export default function ChatPage() {
       storageMessages = messages.map((msg: any) =>{
         const assistantMessage = {
           id: msg.id,
-          role: msg.sender === "user" ? "user" : "ai",
+          role: msg.sender === "human" ? "human" : "ai",
           content: msg.message
         };
         return assistantMessage
@@ -336,7 +336,7 @@ export default function ChatPage() {
                     <div
                       key={message.id}
                       className={`flex items-start space-x-3 mb-4 ${
-                        message.role === "user"
+                        message.role === "human"
                           ? "justify-end"
                           : "justify-start"
                       }`}
@@ -351,7 +351,7 @@ export default function ChatPage() {
 
                       <div
                         className={`max-w-[80%] p-3 rounded-lg ${
-                          message.role === "user"
+                          message.role === "human"
                             ? "bg-green-600 text-white"
                             : "bg-gray-100 text-gray-900"
                         }`}
@@ -361,7 +361,7 @@ export default function ChatPage() {
                         </p>
                       </div>
 
-                      {message.role === "user" && (
+                      {message.role === "human" && (
                         <Avatar className="h-8 w-8">
                           <AvatarFallback className="bg-blue-100">
                             <User className="h-4 w-4 text-blue-600" />
