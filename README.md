@@ -25,7 +25,7 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 
 - **Frontend**: Next.js 15 con App Router, React 19, TypeScript
 - **Styling**: Tailwind CSS 4.x, shadcn/ui components
-- **AI**: Vercel AI SDK con OpenAI GPT-4 Turbo
+- **Observabilidad**: Vercel Observability para monitoreo y analytics
 - **Autenticación**: Supabase (configuración demo)
 - **Iconos**: Lucide React
 - **Tipografía**: Geist Sans y Mono
@@ -33,7 +33,7 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 
 ## 📋 Prerequisitos
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm (recomendado) o npm
 - Cuenta de OpenAI con API key
 - Cuenta de Supabase (opcional, para autenticación completa)
@@ -41,12 +41,14 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 ## 🛠️ Instalación
 
 1. **Clona el repositorio**
+
    ```bash
    git clone <repository-url>
    cd finance-chatbot
    ```
 
 2. **Instala las dependencias**
+
    ```bash
    pnpm install
    # o
@@ -54,21 +56,24 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
    ```
 
 3. **Configura las variables de entorno**
+
    ```bash
    cp .env.local.example .env.local
    ```
-   
+
    Edita `.env.local` con tus credenciales:
+
    ```env
    # OpenAI Configuration
    OPENAI_API_KEY=tu_openai_api_key_aqui
-   
+
    # Supabase Configuration (opcional)
    NEXT_PUBLIC_SUPABASE_URL=tu_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_supabase_anon_key
    ```
 
 4. **Ejecuta el servidor de desarrollo**
+
    ```bash
    pnpm dev
    # o
@@ -80,11 +85,11 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 
 ## 🌐 Variables de Entorno
 
-| Variable | Descripción | Requerida |
-|----------|-------------|-----------|
-| `OPENAI_API_KEY` | Tu API key de OpenAI para el chatbot | ✅ |
-| `NEXT_PUBLIC_SUPABASE_URL` | URL de tu proyecto Supabase | ⚠️ (Demo) |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anónima de Supabase | ⚠️ (Demo) |
+| Variable                        | Descripción                          | Requerida |
+| ------------------------------- | ------------------------------------ | --------- |
+| `OPENAI_API_KEY`                | Tu API key de OpenAI para el chatbot | ✅        |
+| `NEXT_PUBLIC_SUPABASE_URL`      | URL de tu proyecto Supabase          | ⚠️ (Demo) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anónima de Supabase            | ⚠️ (Demo) |
 
 ## 📚 Comandos de Desarrollo
 
@@ -135,12 +140,13 @@ FinanceBot puede ayudarte con:
 
 - **💰 Presupuestos**: Creación y gestión de presupuestos mensuales
 - **🏦 Ahorros**: Estrategias efectivas para ahorrar dinero
-- **📈 Inversiones**: Consejos para principiantes y avanzados  
+- **📈 Inversiones**: Consejos para principiantes y avanzados
 - **💳 Deudas**: Planes personalizados para salir de deudas
 - **📊 Gastos**: Control y optimización de gastos personales
 - **📋 Planificación**: Objetivos financieros a corto y largo plazo
 
 ### Preguntas Frecuentes Incluidas:
+
 - "¿Cómo puedo crear un presupuesto mensual?"
 - "¿Cuál es la mejor estrategia para ahorrar?"
 - "¿Cómo puedo salir de deudas?"
@@ -150,13 +156,16 @@ FinanceBot puede ayudarte con:
 ## 🔧 Configuración de la API
 
 ### Chat Endpoint (`/api/chat`)
+
 - Utiliza el Vercel AI SDK con OpenAI GPT-4 Turbo
 - Streaming de respuestas en tiempo real
 - Sistema prompt personalizado para asesoramiento financiero
 - Máximo 30 segundos de duración por request
 
 ### Autenticación
+
 La aplicación incluye un sistema de autenticación demo con:
+
 - Login/registro básico
 - Almacenamiento en localStorage (desarrollo)
 - Integración preparada para Supabase
@@ -164,12 +173,14 @@ La aplicación incluye un sistema de autenticación demo con:
 ## 🎨 Componentes UI
 
 Utiliza [shadcn/ui](https://ui.shadcn.com/) con el estilo "new-york":
+
 - **Primitivos**: Radix UI para accesibilidad
 - **Iconos**: Lucide React
 - **Estilizado**: class-variance-authority
 - **Temas**: Soporte completo claro/oscuro
 
 Componentes principales incluidos:
+
 - Cards, Buttons, Inputs, Dialogs
 - Scroll Areas, Avatars, Badges
 - Forms, Tables, Charts
