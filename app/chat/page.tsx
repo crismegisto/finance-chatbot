@@ -227,7 +227,7 @@ export default function ChatPage() {
   }, [messages]);
 
   const handleStoriesRequest = () => {
-    alert("Funcionalidad de historias de usuario aún no implementada.");
+    router.push("/historias");
   };
 
   const getMessagesBySessionId = async (sessionId: string) => {
