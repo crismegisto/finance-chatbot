@@ -8,7 +8,7 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 ![React](https://img.shields.io/badge/React-19-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.1.9-06B6D4)
-![Ollama](https://img.shields.io/badge/Ollama-LLaMA3:8B-orange)
+![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash%20Lite-orange)
 
 ## ✨ Características
 
@@ -20,13 +20,13 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 - 🔐 **Sistema de Autenticación** - Login/registro con Supabase (demo)
 - 🌙 **Soporte de Temas** - Modo claro y oscuro
 - 🇪🇸 **Interfaz en Español** - Completamente localizada
-- 🧠 **Motor RAG** - Sistema usando Ollama (LLaMA3:8B), LangChain y FAISS
+- 🧠 **Motor RAG** - Sistema usando Google Gemini 2.5 Flash Lite, LangChain y FAISS
 
 ## 🚀 Tech Stack
 
 - **Frontend**: Next.js 15 con App Router, React 19, TypeScript
 - **Styling**: Tailwind CSS 4.x, shadcn/ui components
-- **AI Backend**: Ollama (LLaMA3:8B), LangChain, FAISS (motor RAG)
+- **AI Backend**: Google Gemini 2.5 Flash Lite, LangChain, FAISS (motor RAG)
 - **API**: FastAPI (Python) para el servicio de Q&A
 - **Observabilidad**: Vercel Observability para monitoreo y analytics
 - **Autenticación**: Supabase (configuración demo)
@@ -39,7 +39,7 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 - Node.js 18+
 - Python 3.10+ (para el motor RAG)
 - pnpm (recomendado) o npm
-- [Ollama](https://ollama.com/) instalado con el modelo `llama3:8b`
+- Acceso a Google Gemini 2.5 Flash Lite API
 - Cuenta de Supabase (opcional, para autenticación completa)
 
 ## 🛠️ Instalación
@@ -76,7 +76,7 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 4. **Configura y ejecuta el motor RAG**
 
    Sigue las instrucciones en [`llm-chat-assistant/README.md`](./llm-chat-assistant/README.md) para:
-   - Instalar Ollama y el modelo LLaMA3:8B
+   - Configurar Google Gemini 2.5 Flash Lite API
    - Configurar el entorno Python
    - Ejecutar la API FastAPI
 
@@ -173,7 +173,7 @@ FinanceBot puede ayudarte con:
 ### Motor RAG (llm-chat-assistant)
 
 - **API FastAPI**: Endpoint `/ask` para preguntas sobre finanzas
-- **Modelo**: Ollama con LLaMA3:8B local
+- **Modelo**: Google Gemini 2.5 Flash Lite
 - **Base de datos vectorial**: FAISS para búsqueda semántica
 - **Seguridad**: Autenticación con API Key
 - **Contenedor**: Docker para fácil despliegue
