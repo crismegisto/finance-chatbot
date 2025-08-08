@@ -1,0 +1,13 @@
+version: 1.0
+services:
+  web:
+    image: ${IMAGE_NAME}
+    build:
+      dockerfile: Dockerfile
+    env:
+      - name: API_KEY
+        value: ${API_KEY}
+      - name: GOOGLE_API_KEY
+        value: ${GOOGLE_API_KEY}
+    ports:
+      - 8080
