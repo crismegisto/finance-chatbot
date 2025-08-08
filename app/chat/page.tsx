@@ -212,9 +212,12 @@ export default function ChatPage() {
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     } finally {
-      // Always clear localStorage and redirect, even if API call fails
+      // Always clear localStorage, sessionStorage and redirect, even if API call fails
       localStorage.removeItem("user");
       localStorage.removeItem("chatMessages");
+      if (typeof window !== "undefined") {
+        sessionStorage.clear();
+      }
       router.push("/");
     }
   };
