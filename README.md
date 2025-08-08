@@ -8,11 +8,11 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 ![React](https://img.shields.io/badge/React-19-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.1.9-06B6D4)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4%20Turbo-00A67E)
+![Ollama](https://img.shields.io/badge/Ollama-LLaMA3:8B-orange)
 
 ## ✨ Características
 
-- 🤖 **Chatbot AI Inteligente** - Asesoramiento financiero personalizado con OpenAI GPT-4 Turbo
+- 🤖 **Chatbot AI Inteligente** - Asesoramiento financiero personalizado con sistema RAG
 - 📱 **Diseño Responsivo** - Optimizado para móviles y escritorio
 - 🌟 **Interfaz Moderna** - Construida con shadcn/ui y Tailwind CSS
 - 💬 **Chat en Tiempo Real** - Respuestas streaming para una experiencia fluida
@@ -20,11 +20,14 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 - 🔐 **Sistema de Autenticación** - Login/registro con Supabase (demo)
 - 🌙 **Soporte de Temas** - Modo claro y oscuro
 - 🇪🇸 **Interfaz en Español** - Completamente localizada
+- 🧠 **Motor RAG** - Sistema usando Ollama (LLaMA3:8B), LangChain y FAISS
 
 ## 🚀 Tech Stack
 
 - **Frontend**: Next.js 15 con App Router, React 19, TypeScript
 - **Styling**: Tailwind CSS 4.x, shadcn/ui components
+- **AI Backend**: Ollama (LLaMA3:8B), LangChain, FAISS (motor RAG)
+- **API**: FastAPI (Python) para el servicio de Q&A
 - **Observabilidad**: Vercel Observability para monitoreo y analytics
 - **Autenticación**: Supabase (configuración demo)
 - **Iconos**: Lucide React
@@ -34,8 +37,9 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
 ## 📋 Prerequisitos
 
 - Node.js 18+
+- Python 3.10+ (para el motor RAG)
 - pnpm (recomendado) o npm
-- Cuenta de OpenAI con API key
+- [Ollama](https://ollama.com/) instalado con el modelo `llama3:8b`
 - Cuenta de Supabase (opcional, para autenticación completa)
 
 ## 🛠️ Instalación
@@ -64,15 +68,19 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
    Edita `.env.local` con tus credenciales:
 
    ```env
-   # OpenAI Configuration
-   OPENAI_API_KEY=tu_openai_api_key_aqui
-
    # Supabase Configuration (opcional)
    NEXT_PUBLIC_SUPABASE_URL=tu_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_supabase_anon_key
    ```
 
-4. **Ejecuta el servidor de desarrollo**
+4. **Configura y ejecuta el motor RAG**
+
+   Sigue las instrucciones en [`llm-chat-assistant/README.md`](./llm-chat-assistant/README.md) para:
+   - Instalar Ollama y el modelo LLaMA3:8B
+   - Configurar el entorno Python
+   - Ejecutar la API FastAPI
+
+5. **Ejecuta el servidor de desarrollo**
 
    ```bash
    pnpm dev
@@ -80,16 +88,17 @@ Una aplicación web moderna de chatbot financiero construida con Next.js 15 que 
    npm run dev
    ```
 
-5. **Abre tu navegador**
+6. **Abre tu navegador**
    Visita [http://localhost:3000](http://localhost:3000)
 
 ## 🌐 Variables de Entorno
 
 | Variable                        | Descripción                          | Requerida |
 | ------------------------------- | ------------------------------------ | --------- |
-| `OPENAI_API_KEY`                | Tu API key de OpenAI para el chatbot | ✅        |
 | `NEXT_PUBLIC_SUPABASE_URL`      | URL de tu proyecto Supabase          | ⚠️ (Demo) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anónima de Supabase            | ⚠️ (Demo) |
+
+**Nota**: El motor RAG utiliza sus propias variables de entorno. Ver [`llm-chat-assistant/README.md`](./llm-chat-assistant/README.md) para más detalles.
 
 ## 📚 Comandos de Desarrollo
 
@@ -129,6 +138,12 @@ finance-chatbot/
 │   └── theme-provider.tsx # Proveedor de temas
 ├── hooks/                 # Custom hooks
 ├── lib/                   # Utilidades y configuración
+├── llm-chat-assistant/    # Motor RAG con Ollama y LangChain
+│   ├── app/               # API FastAPI y motor RAG
+│   ├── data/              # Documentos de finanzas personales
+│   ├── faiss_index/       # Base de datos vectorial FAISS
+│   ├── Dockerfile         # Contenedor para el servicio RAG
+│   └── README.md          # Documentación del motor RAG
 ├── public/                # Archivos estáticos
 ├── utils/                 # Utilidades adicionales
 └── CLAUDE.md             # Instrucciones para Claude Code
@@ -155,12 +170,15 @@ FinanceBot puede ayudarte con:
 
 ## 🔧 Configuración de la API
 
-### Chat Endpoint (`/api/chat`)
+### Motor RAG (llm-chat-assistant)
 
-- Utiliza el Vercel AI SDK con OpenAI GPT-4 Turbo
-- Streaming de respuestas en tiempo real
-- Sistema prompt personalizado para asesoramiento financiero
-- Máximo 30 segundos de duración por request
+- **API FastAPI**: Endpoint `/ask` para preguntas sobre finanzas
+- **Modelo**: Ollama con LLaMA3:8B local
+- **Base de datos vectorial**: FAISS para búsqueda semántica
+- **Seguridad**: Autenticación con API Key
+- **Contenedor**: Docker para fácil despliegue
+
+Ver la documentación completa en [`llm-chat-assistant/README.md`](./llm-chat-assistant/README.md)
 
 ### Autenticación
 
