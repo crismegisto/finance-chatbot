@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         sessionExists = data !== null && data.id === sessionId;
     }
     // If not, insert new session with first question
-    if (!sessionExists && user_id && message.includes('?')) {
+    if (!sessionExists && user_id && message.includes('?') && sender === 'user' ) {
       const { error: insertError } = await supabase
         .from('chat_sessions')
         .insert([
