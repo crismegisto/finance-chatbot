@@ -34,6 +34,8 @@ const useChat = (user: any, chatHistory?: any[]) => {
     }
     return [];
   });
+  // Chat history state for stacking interactions
+  const [stackedHistory, setStackedHistory] = useState<any[]>(chatHistory || []);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -128,7 +130,7 @@ const useChat = (user: any, chatHistory?: any[]) => {
             Authorization: "Bearer CLAVE_API_TEAM8_070401082025?",
             accept: "application/json",
           },
-          body: JSON.stringify({ query: messageToSend, chat_history: chatHistory?.map((msg) => ({ type: msg.role, content: msg.content})) || [] }),
+          body: JSON.stringify({ query: messageToSend, chat_history: stackedHistory.map((msg) => ({ type: msg.role, content: msg.content })) }),
         }
       );
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
@@ -141,6 +143,15 @@ const useChat = (user: any, chatHistory?: any[]) => {
       };
       setMessages((prev) => [...prev, assistantMessage]);
       handleMessages(assistantMessage.content, assistantMessage.role);
+
+      // Stack user and assistant messages in chat history
+      setStackedHistory((prev) => {
+        let updated = [...prev, userMessage, assistantMessage];
+        if (updated.length > 20) {
+          updated = updated.slice(updated.length - 20);
+        }
+        return updated;
+      });
     } catch (err) {
       setMessages((prev) => [
         ...prev,
