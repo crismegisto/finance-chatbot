@@ -324,12 +324,10 @@ export default function ChatPage() {
                         ¡Hola! Soy tu asesor financiero personal
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Puedo ayudarte con presupuestos, ahorros, inversiones,
-                        deudas y gastos personales.
+                        Te ayudo a organizar tu dinero y tomar mejores decisiones con <strong>presupuestos, ahorros, inversiones, deudas y gastos personales</strong>.
                       </p>
                       <p className="text-sm text-gray-500">
-                        Haz una pregunta o selecciona una sugerencia del panel
-                        inferior.
+                        Escribe tu pregunta y ¡comenzamos!
                       </p>
                     </div>
                   )}
