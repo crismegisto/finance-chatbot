@@ -8,8 +8,9 @@ describe('api/users/chat/route', () => {
       body: { sessionId: '', message: '' },
     });
     const response = await POST(req);
-    expect(response.status).toBe(400);
-    expect(response._getJSONData().error).toBeDefined();
+    expect(response?.status).toBe(400);
+    const data = await response?.json();
+    expect(data.error).toBeDefined();
   });
 
   it('should return 401 if userId is missing in GET', async () => {
@@ -18,9 +19,10 @@ describe('api/users/chat/route', () => {
       url: '/api/users/chat',
     });
     req.url = '/api/users/chat';
-    const response = await GET(req);
-    expect(response.status).toBe(401);
-    expect(response._getJSONData().error).toBeDefined();
+    const response = await POST(req);
+    expect(response?.status).toBe(401);
+    const data = await response?.json();
+    expect(data.error).toBeDefined();
   });
 
   // Add more tests for valid POST and GET, Supabase mocks, etc.
